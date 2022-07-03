@@ -1,0 +1,56 @@
+<html>
+
+<head>
+  <title>Todo App</title>
+</head>
+
+<body>
+  <h1>My Todo List</h1>
+  <pre id="todos">default</pre>
+  <input type="text" id="input-name" placeholder="input name of task" />
+  <button id="add">Add</button>
+  <br />
+  <button id="reset">reset</button>
+</body>
+
+<script>
+  const todos = document.getElementById('todos');
+  const inputName = document.getElementById("input-name");
+  const add = document.getElementById("add");
+  const reset = document.getElementById("reset");
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    loadTodos();
+  });
+
+  const loadTodos = () => {
+    fetch(`/api/todos`)
+      .then(response => response.json())
+      .then(response => {
+        if (response.length === 0) {
+          todos.textContent = "no result";
+        } else {
+          todos.textContent = response.map(todo => `${todo.name} ${todo.is_done}`).join('\n');
+        }
+      })
+      .catch(err => console.error(err));
+  }
+
+  add.addEventListener('click', (e) => {
+    console.log("add");
+    console.log(inputName.value);
+    fetch('/api/add', {
+      method: 'POST',
+      body: inputName.value,
+    }).catch(err => console.error(err));
+    loadTodos();
+  });
+
+  reset.addEventListener('click', () => {
+    console.log("reset");
+    fetch('/api/reset').catch(err => console.error(err));
+    loadTodos();
+  });
+</script>
+
+</html>

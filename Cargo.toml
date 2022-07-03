@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
+serde = { version = "*", features = ["derive"] }
+futures-util = "*"
+futures-core = "*"
