@@ -12,14 +12,12 @@ async fn index(data: web::Data<AppState>) -> String {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .app_data(web::Data::new(AppState {
-                app_name: String::from("Todo App"),
-            }))
-            .service(index)
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+    let state = web::Data::new(AppState {
+        app_name: "Todo App".to_string(),
+    });
+
+    HttpServer::new(move || App::new().app_data(state.clone()).service(index))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
