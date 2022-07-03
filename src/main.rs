@@ -2,6 +2,12 @@ use actix_web::{get, web, App, HttpServer};
 
 struct AppState {
     app_name: String,
+    todos: Vec<Todo>,
+}
+
+struct Todo {
+    name: String,
+    is_done: bool,
 }
 
 #[get("/")]
@@ -14,6 +20,7 @@ async fn index(data: web::Data<AppState>) -> String {
 async fn main() -> std::io::Result<()> {
     let state = web::Data::new(AppState {
         app_name: "Todo App".to_string(),
+        todos: Vec::new(),
     });
 
     HttpServer::new(move || App::new().app_data(state.clone()).service(index))
