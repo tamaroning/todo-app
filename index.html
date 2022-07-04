@@ -30,7 +30,10 @@
         if (response.length === 0) {
           todos.textContent = "no result";
         } else {
-          todos.textContent = response.map(todo => `${todo.name} ${todo.is_done}`).join('\n');
+          todos.textContent = response.map(todo => {
+            const status = todo.is_done ? 'Done' : 'Not yet';
+            return `${todo.name} ${status}`;
+          }).join('\n');
         }
       })
       .catch(err => console.error(err));
