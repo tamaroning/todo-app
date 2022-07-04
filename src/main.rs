@@ -21,15 +21,6 @@ struct Todo {
     is_done: bool,
 }
 
-impl Todo {
-    fn new(name: String) -> Self {
-        Todo {
-            name,
-            is_done: false,
-        }
-    }
-}
-
 #[get("/")]
 async fn index() -> HttpResponse {
     let html = include_str!("../index.html");
@@ -45,15 +36,10 @@ async fn todos(state: Data<AppState>) -> Json<Vec<Todo>> {
 }
 
 #[post("/api/add")]
-async fn add(state: Data<AppState>, mut body: Payload) -> Result<HttpResponse, Error> {
+async fn add(state: Data<AppState>, body: Json<Todo>) -> Result<HttpResponse, Error> {
     let mut data = state.todos.lock().unwrap();
-
-    let mut bytes = BytesMut::new();
-    while let Some(item) = body.next().await {
-        bytes.extend_from_slice(&item?);
-    }
-    let name = std::str::from_utf8(&bytes)?;
-    data.push(Todo::new(name.to_string()));
+    // implicit deref: Json<Todo> -> &Todo
+    data.push(body.clone());
 
     Ok(HttpResponse::NoContent().finish())
 }

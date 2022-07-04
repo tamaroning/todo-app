@@ -37,17 +37,17 @@
   }
 
   add.addEventListener('click', (e) => {
-    console.log("add");
-    console.log(inputName.value);
     fetch('/api/add', {
       method: 'POST',
-      body: inputName.value,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: inputName.value, is_done: false }),
     }).catch(err => console.error(err));
     loadTodos();
   });
 
   reset.addEventListener('click', () => {
-    console.log("reset");
     fetch('/api/reset').catch(err => console.error(err));
     loadTodos();
   });
