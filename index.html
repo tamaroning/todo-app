@@ -6,7 +6,8 @@
 
 <body>
   <h1>My Todo List</h1>
-  <pre id="todos">default</pre>
+  <ul id="list"></ul>
+
   <input type="text" id="input-name" placeholder="input name of task" />
   <button id="add">Add</button>
   <br />
@@ -14,7 +15,7 @@
 </body>
 
 <script>
-  const todos = document.getElementById('todos');
+  const list = document.getElementById("list");
   const inputName = document.getElementById("input-name");
   const add = document.getElementById("add");
   const reset = document.getElementById("reset");
@@ -24,16 +25,40 @@
   });
 
   const loadTodos = () => {
+    // listの内容をリセットする
+    list.innerHTML = '';
     fetch(`/api/todos`)
       .then(response => response.json())
       .then(response => {
         if (response.length === 0) {
-          todos.textContent = "no result";
+          list.textContent = "no result";
         } else {
-          todos.textContent = response.map(todo => {
+          response.map(todo => {
+            const span = document.createElement("span");
             const status = todo.is_done ? 'Done' : 'Not yet';
-            return `${todo.name} ${status}`;
-          }).join('\n');
+            span.textContent = `${todo.name} ${status}\t`;
+
+            // ボタンを作成して、イベントを登録する
+            const btn = document.createElement("button");
+            btn.textContent = "Done"
+            btn.addEventListener('click', () => {
+              fetch(`/api/update?name=${todo.name}`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_done: true })
+              }).catch(err => console.error(err));
+            });
+
+            // 一列を作成
+            const li = document.createElement("li");
+            li.appendChild(span);
+            li.appendChild(btn);
+
+            // リストに列を追加する
+            list.appendChild(li);
+          });
         }
       })
       .catch(err => console.error(err));
